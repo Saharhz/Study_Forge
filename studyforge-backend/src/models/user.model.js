@@ -44,9 +44,28 @@ const UserSchema = new Schema(
 );
 
 // Virtual field: never saved; used to accept raw password safely
-UserSchema.virtual('password').set(function (password) {
-    this._password = password. // temp field (not persisted)
+UserSchema.virtual("password").set(function (password) {
+  this._password = password; // temp field (not persisted)
 });
+
+// Hash only when a new raw password is provided
+UserSchema.pre("validate", async function (next) {
+  try {
+    if (this._password) {
+      this.passwordHash = await bcrypt.hash(this._password, saltRounds);
+    }
+    if (this.isNew && !this.passwordHash) {
+      return next(new Error("password is required"));
+    }
+    next();
+  } catch (error) {
+    next(err);
+  }
+});
+
+UserSchema.methods.comparePassword = function (candidate) {
+  return bcrypt.compare(candidate, this.passwordHash);
+};
 
 // hide internal fields on JSON
 UserSchema.set("toJSON", {

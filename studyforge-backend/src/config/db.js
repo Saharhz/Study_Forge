@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 
-async function connectDB(uri = process.env.Mongo_URI) {
-  if (!uri) throw new Error("'MONGO URI is not set");
+export async function connectDB(uri) {
+  const connStr = uri ?? process.env.MONGO_URI;
+  if (!connStr || connStr.trim() === "") {
+    throw new Error("MONGO URI is not set");
+  }
   mongoose.set("strictQuery", true);
 
-  await mongoose.connect(uri, {
+  await mongoose.connect(connStr, {
     autoIndex: true,
   });
 
