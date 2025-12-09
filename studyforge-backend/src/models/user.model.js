@@ -57,9 +57,12 @@ UserSchema.pre("validate", async function (next) {
     if (this.isNew && !this.passwordHash) {
       return next(new Error("password is required"));
     }
+    if (this._password && this._password.length < 6) {
+      return next(new Error("Password must be at least 6 characters"));
+    }
     next();
   } catch (error) {
-    next(err);
+    next(error);
   }
 });
 

@@ -91,7 +91,7 @@ router.post("/", async (req, res, next) => {
     user.password = password; // triggers bcrypt hashing via pre('save')
     await user.save();
 
-    return res.status(201).json(user); // toJSON strips passwordHash
+    return res.status(201).json(user); // to JSON strips passwordHash
   } catch (error) {
     if (error?.code === 11000) {
       return res.status(409).json({ error: "email already exixst" });
