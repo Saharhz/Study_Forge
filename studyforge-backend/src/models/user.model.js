@@ -27,7 +27,7 @@ const UserSchema = new Schema(
     passwordHash: {
       type: String,
       required: true,
-      select: false,
+      select: false, //By default, when we do User.find(...), do NOT include the passwordHash field in the result.
     },
     roles: {
       type: [String],
