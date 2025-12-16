@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import documentsRouter from "./routes/documents.routes.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
+app.use("/documents", documentsRouter);
 
 app.get("/health", (req, res) => {
   res.json({ ok: true });

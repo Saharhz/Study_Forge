@@ -44,10 +44,43 @@ router.post("/", async (req, res, next) => {
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: "valid userId is required" });
     }
-    if (!title || sourceType) {
+    // The trim() method removes whitespace from both sides of a string and The trim() method removes whitespace from both sides of a string.
+    if (!title || typeof title !== "string" || title.trim() === "") {
+      return res.status(400).json({ error: "title is required" });
+    }
+    if (!sourceType || !["pdf", "url"].includes(sourceType)) {
       return res
         .status(400)
         .json({ error: "sourceType must be 'pdf' or 'url'" });
     }
-  } catch (error) {}
+    if (sourceType === "url" && (!sourceUrl || typeof sourceUrl !== "string")) {
+      return res
+        .status(400)
+        .json({ error: "sourceUrl is required when sourceType = 'url'" });
+    }
+    if (
+      sourceType === "pdf" &&
+      (!storageKey || typeof storageKey !== "string")
+    ) {
+      return res
+        .status(400)
+        .json({ error: "storageKey is required when sourcetype = 'pdf'" });
+    }
+
+    const doc = await Document.create({
+      userId,
+      title: title.trim(),
+      sourceType,
+      sourceUrl,
+      storageKey,
+      status, // optional; defaults to 'queued' in schema
+      meta, // optional
+    });
+
+    return res.status(201).json(doc);
+  } catch (error) {
+    next(error);
+  }
 });
+
+export default router;
